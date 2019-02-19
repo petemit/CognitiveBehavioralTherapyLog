@@ -43,6 +43,25 @@ let data = {
     38: { Anger: "Resentful" },
     39: { Anger: "Annoyed" },
     40: { Anger: "Irritated" },
-    40: { Anger: "Upset" },
-    40: { Anger: "Furious" }
+    41: { Anger: "Upset" },
+    42: { Anger: "Furious" }
 };
+
+export function _initEmotionData() {
+    Object.keys(data).map(key => _addEmotion(data[key], key));
+}
+                
+export function _addEmotion(newEmotion, key) {
+    return AsyncStorage.mergeItem(
+        EMOTIONS_KEY,
+        JSON.stringify({
+            [key]: newEmotion
+        })
+    );
+}
+
+export function _getEmotions() {
+    return AsyncStorage.getItem(EMOTIONS_KEY).then(result =>
+        JSON.parse(result)
+    );
+}

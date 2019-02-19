@@ -64,3 +64,22 @@ let data = {
         description: `Others are held responsible for negative situations or for your feelings.`
     }
 };
+
+export function _initCognitiveDistortionData() {
+    Object.keys(data).map(key => _addCognitiveDistortion(data[key], key));
+}
+
+export function _addCognitiveDistortion(newCd, key) {
+    return AsyncStorage.mergeItem(
+        COGNITIVE_DISTORTIONS_KEY,
+        JSON.stringify({
+            [key]: newCd
+        })
+    );
+}
+
+export function _getCognitiveDistortions() {
+    return AsyncStorage.getItem(COGNITIVE_DISTORTIONS_KEY).then(result =>
+        JSON.parse(result)
+    );
+}

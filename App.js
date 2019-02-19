@@ -1,122 +1,63 @@
 import React from "react";
 import { Platform, StatusBar, StyleSheet, View } from "react-native";
 import { AppLoading, Asset, Font, Icon } from "expo";
-import {
-    createMaterialTopTabNavigator,
-    createAppContainer
-} from "react-navigation";
-import Situation from "./screens/Situation";
-import Emotions from "./screens/Emotions";
+
 import { CbtStatusBar } from "./components/CbtStatusBar";
-import { primary } from "./constants/Colors";
-import NegativeThoughts from "./screens/NegativeThoughts";
-import CognitiveDistortions from "./screens/CognitiveDistortions";
-import PositiveThoughts from "./screens/PositiveThoughts";
-import ReviewThoughts from "./screens/ReviewThoughts";
-import ReviewEmotions from "./screens/ReviewEmotions";
 
-const MainNavigator = createMaterialTopTabNavigator(
-    {
-        Situation: {
-            screen: Situation,
-            navigationOptions: {
-                headerStyle: {
-                    backgroundColor: primary
-                }
-            }
-        },
-        Emotions: {
-            screen: Emotions,
-            navigationOptions: {
-              title: "Emotions",
-                headerStyle: {
-                    backgroundColor: primary
-                }
-            }
-        },
-        NegativeThoughts: {
-            screen: NegativeThoughts,
-            navigationOptions: {
-                title: "Negative Thoughts",
-                headerStyle: {
-                    backgroundColor: primary
-                }
-            }
-        },
-        CognitiveDistortions: {
-            screen: CognitiveDistortions,
-            navigationOptions: {
-                title: "Cognitive Distortions",
-                headerStyle: {
-                    backgroundColor: primary
-                }
-            }
-        },
-        PositiveThoughts: {
-            screen: PositiveThoughts,
-            navigationOptions: {
-                title: "Positive Thoughts",
-                headerStyle: {
-                    backgroundColor: primary
-                }
-            }
-        },
-        ReviewThoughts: {
-            screen: ReviewThoughts,
-            navigationOptions: {
-                title: "Review Thoughts",
-                headerStyle: {
-                    backgroundColor: primary
-                }
-            }
-        },
-        ReviewEmotions: {
-            screen: ReviewEmotions,
-            navigationOptions: {
-                title: "Review Emotions",
-                headerStyle: {
-                    backgroundColor: primary
-                }
-            }
-        }
-    },
-    {
-        initialRouteName: "Situation",
-        swipeEnabled: true,
-        tabBarOptions: {
-            scrollEnabled: true
-        },
-        lazy: true,
+import { _initCognitiveDistortionData } from "./utils/_CognitiveDistortions";
+import { _initEmotionData } from "./utils/_Emotions";
+import { _initTroubleshootingGuidelines } from "./utils/_TroubleShootingGuidelines";
+import { DefaultTheme, Provider as PaperProvider } from "react-native-paper";
+import { Provider as StoreProvider } from "react-redux";
+import NewLog from './components/NewLog';
+import { primary, secondary } from "./constants/Colors";
 
+
+const theme = {
+    ...DefaultTheme,
+    colors: {
+        ...DefaultTheme.colors,
+        primary: primary,
+        accent: secondary
     }
-);
-
-const AppContainer = createAppContainer(MainNavigator);
+}
 
 export default class App extends React.Component {
     state = {
         isLoadingComplete: false
     };
 
+    componentDidMount() {
+        _initCognitiveDistortionData();
+        _initEmotionData();
+        _initTroubleshootingGuidelines();
+    }
+
     render() {
         if (!this.state.isLoadingComplete && !this.props.skipLoadingScreen) {
             return (
-                <AppLoading
-                    startAsync={this._loadResourcesAsync}
-                    onError={this._handleLoadingError}
-                    onFinish={this._handleFinishLoading}
-                />
+                <PaperProvider>
+                    <AppLoading
+                        startAsync={this._loadResourcesAsync}
+                        onError={this._handleLoadingError}
+                        onFinish={this._handleFinishLoading}
+                    />
+                </PaperProvider>
             );
         } else {
             return (
-                <View style={styles.container}>
-                    {Platform.OS === "ios" && <StatusBar barStyle="default" />}
-                    {Platform.OS === "android" && (
-                        <CbtStatusBar barStyle="light-content" />
-                    )}
-
-                    <AppContainer />
-                </View>
+                <PaperProvider theme={theme}>
+                    <View style={styles.container}>
+                        {Platform.OS === "ios" && (
+                            <StatusBar barStyle="default" />
+                        )}
+                        {Platform.OS === "android" && (
+                            <CbtStatusBar barStyle="light-content" />
+                        )}
+                        <NewLog />
+                        
+                    </View>
+                </PaperProvider>
             );
         }
     }
